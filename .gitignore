@@ -1,7 +1,28 @@
+# Virtual Environment
 myvenv/
+venv/
+env/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Database
 db.sqlite3
+
+# Environment variables
 .env
+
+# Static & Media
 media/
 staticfiles/
+
+# Logs
+*.log
+
+# OS / Editor
+.vscode/
+.idea/
+.DS_Store
