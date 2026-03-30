@@ -1,0 +1,27 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block content_title %}
+    <h1>🎓 Student Management Dashboard</h1>
+    <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+        <h2 style="margin: 0; font-size: 1.5em;">📊 Total Students: {{ total_students }}</h2>
+        {% if top_students %}
+        <p style="margin: 5px 0 0 0; font-size: 0.9em;">🏆 Top Performers: {{ top_students|join:", " }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+        <a href="{% url 'admin:placement_student_changelist' %}?export=csv" class="button" style="background: #3b82f6;">
+            📥 Export All Students
+        </a>
+    </li>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+    <script src="{% static 'admin/js/custom_admin.js' %}"></script>
+{% endblock %}

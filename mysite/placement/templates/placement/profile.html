@@ -1,0 +1,68 @@
+{% extends 'placement/base.html' %}
+{% block title %}Profile | PlacementAI{% endblock %}
+{% block extra_script %}
+{% if not no_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    new Chart(document.getElementById("scoreChart"), {
+        type: 'doughnut',
+        data: {
+            labels: ['Score', 'Remaining'],
+            datasets: [{
+                data: [{{ score }}, {{ remaining_score }}],
+                backgroundColor: ['#22c55e', '#374151']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="card" style="max-width:500px;margin:2rem auto;">
+    <h2>👤 Student Profile</h2>
+
+    {% if no_data %}
+        <!-- Empty State -->
+        <div style="text-align:center;padding:2rem 1rem;">
+            <div style="font-size:3rem;margin-bottom:1rem;">👤</div>
+            <h3 style="color:var(--muted);margin-bottom:1rem;">No Profile Data Yet</h3>
+            <p style="color:var(--muted);margin-bottom:2rem;max-width:300px;margin-left:auto;margin-right:auto;">
+                Complete your placement analysis to view your personalized profile with scores, badges, and insights.
+            </p>
+            <a href="{% url 'analyze' %}" class="button" style="display:inline-block;">🚀 Start Analysis</a>
+        </div>
+    {% else %}
+        <div style="text-align:center;font-size:1.5rem;margin-bottom:1rem;padding:10px;border-radius:8px;background:rgba(30,41,59,0.8);">{{ badge }}</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:2rem;">
+            <div class="detail"><strong>Name</strong>{{ student.name }}</div>
+            <div class="detail"><strong>Email</strong>{{ student.email }}</div>
+            <div class="detail"><strong>Branch</strong>{{ student.branch }}</div>
+            <div class="detail"><strong>CGPA</strong>{{ student.cgpa }}</div>
+            <div class="detail"><strong>Technical Skills</strong>{{ student.technical_skills }}</div>
+            <div class="detail"><strong>Soft Skills</strong>{{ student.soft_skills }}</div>
+            <div class="detail"><strong>Projects</strong>{{ student.projects }}</div>
+            <div class="detail"><strong>Internships</strong>{{ student.internships }}</div>
+            <div class="detail"><strong>Certifications</strong>{{ student.certifications }}</div>
+            <div class="detail"><strong>Aptitude Score</strong>{{ student.aptitude }}/10</div>
+            <div class="detail"><strong>Communication Score</strong>{{ student.communication }}/10</div>
+            <div class="detail"><strong>Leadership/Activities</strong>{{ student.leadership }}</div>
+            <div class="detail" style="grid-column: span 2;">
+                <strong>Placement Score</strong>
+                {% include 'placement/progress_bar.html' with score=score %}
+            </div>
+        </div>
+
+        <div style="width:200px;height:200px;margin:0 auto;"><canvas id="scoreChart"></canvas></div>
+    {% endif %}
+</div>
+{% endblock %}

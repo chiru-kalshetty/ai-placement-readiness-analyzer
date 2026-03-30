@@ -1,0 +1,5 @@
+{% load static %}
+<div class="progress-container">
+    <div class="progress-bar {% if score >= 70 %}high{% elif score >= 50 %}medium{% else %}low{% endif %}" data-width="{{ score }}"></div>
+    <div class="progress-text">{{ score }}/100</div>
+</div>

@@ -1,0 +1,16 @@
+{% extends 'placement/base.html' %}
+{% block title %}Signup | PlacementAI{% endblock %}
+{% block content %}
+<div class="card" style="max-width:420px;margin:1rem auto;">
+    <h2 style="text-align:center; margin-bottom:1rem;">🚀 Create Account</h2>
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        <input class="form-input" type="text" name="username" placeholder="Username" required>
+        <input class="form-input" type="email" name="email" placeholder="Email" required>
+        <input class="form-input" type="password" name="password" placeholder="Password" required>
+        <input class="form-input" type="password" name="confirm_password" placeholder="Confirm Password" required>
+        <button type="submit">Signup</button>
+    </form>
+    <p style="text-align:center;margin-top:0.8rem;">Already have an account? <a href="{% url 'login' %}" style="color:var(--primary);">Login</a></p>
+</div>
+{% endblock %}

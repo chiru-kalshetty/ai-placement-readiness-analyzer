@@ -1,0 +1,36 @@
+{% extends 'placement/base.html' %}
+{% block title %}PlacementAI - Home{% endblock %}
+{% block content %}
+<section class="card" style="margin-top: 1rem;">
+    <h1 style="font-size: 2.2rem; margin-bottom: 0.8rem;">AI-Based Placement Analyzer</h1>
+    <p style="color:#cbd5e1; font-size:1rem; line-height:1.55;">Transform your career prospects with smart placement predictions, track progress, and receive personalized suggestions based on your profile and scores.</p>
+    <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+        {% if user.is_authenticated %}
+            <a class="button" href="{% url 'dashboard' %}">Dashboard</a>
+            <span style="align-self:center;color:#a0aec0;">You are logged in as <strong>{{ user.username }}</strong></span>
+        {% else %}
+            <a class="button" href="{% url 'login' %}">Login</a>
+            <a class="button secondary" href="{% url 'signup' %}">Signup</a>
+            <a class="button" href="{% url 'dashboard' %}">Dashboard</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="card">
+    <h2>Why choose PlacementAI?</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.9rem;margin-top:1rem;">
+        <article style="background:rgba(30,41,59,0.8);padding:0.9rem;border-radius:10px;border:1px solid var(--border);">
+            <h3>📊 Deep Analytics</h3>
+            <p style="color:#cbd5e1;">Use transparent scoring with milestones and trends to understand strengths and gaps.</p>
+        </article>
+        <article style="background:rgba(30,41,59,0.8);padding:0.9rem;border-radius:10px;border:1px solid var(--border);">
+            <h3>🤖 AI Recommendations</h3>
+            <p style="color:#cbd5e1;">Get concrete actions based on your test scores, skills, and experience data.</p>
+        </article>
+        <article style="background:rgba(30,41,59,0.8);padding:0.9rem;border-radius:10px;border:1px solid var(--border);">
+            <h3>📈 Progress Dashboard</h3>
+            <p style="color:#cbd5e1;">Track your placement readiness and compare with your cohort safely.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}

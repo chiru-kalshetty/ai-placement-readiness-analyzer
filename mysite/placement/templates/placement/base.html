@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PlacementAI{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: rgba(15, 23, 42, 0.85);
+            --text: #f8fafc;
+            --muted: #a0aec0;
+            --primary: #60a5fa;
+            --accent: #22c55e;
+            --danger: #ef4444;
+            --border: rgba(255,255,255,0.12);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--text);
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            animation: fadeIn 0.6s ease;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .navbar .brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navbar .brand:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .navbar a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .navbar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .navbar a:hover::before {
+            left: 100%;
+        }
+
+        .navbar a:hover {
+            background: rgba(96, 165, 250, 0.16);
+            color: #fff;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+
+        .navbar a.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+        }
+
+        .navbar .user-info {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
+
+        .navbar .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+        }
+
+        .navbar .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fff;
+        }
+
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 1.4rem auto;
+            padding: 0 1rem 1.4rem;
+        }
+
+        .card {
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+            color: var(--text);
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            transform: translateZ(0);
+        }
+
+        .card:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.15);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        h1, h2, h3, h4 {
+            margin: 0 0 0.8rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            color: var(--text);
+            padding: 0.75rem 0.9rem;
+            margin-bottom: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15), 0 0 20px rgba(96, 165, 250, 0.1), 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+
+        .button,
+        button {
+            font-family: inherit;
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2), 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before,
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .button:hover::before,
+        button:hover::before {
+            left: 100%;
+        }
+
+        .button:hover,
+        button:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.05);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4), 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .button:active,
+        button:active {
+            transform: translateY(0) scale(0.98);
+            transition: all 0.1s ease;
+        }
+
+        .button.secondary {
+            background: linear-gradient(45deg, #2563eb, #7c3aed);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2), 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .button.secondary:hover {
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4), 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .detail {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: default;
+        }
+
+        .detail:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.1);
+            border-color: rgba(96, 165, 250, 0.2);
+        }
+
+        .detail strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .progress-container {
+            position: relative;
+            width: 100%;
+            height: 24px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin: 8px 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .progress-container:hover {
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.15);
+            transform: scale(1.01);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 12px;
+            transition: width 1.5s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .progress-bar.high {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+        }
+
+        .progress-bar.medium {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+
+        .progress-bar.low {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .message {
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.18);
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            color: #fecaca;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.18);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #bbf7d0;
+        }
+
+        .message.info {
+            background: rgba(96, 165, 250, 0.18);
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            color: #bfdbfe;
+        }
+
+        .notifications-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .notification {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            pointer-events: auto;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.fade-out {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--accent);
+        }
+
+        .notification.error::before {
+            background: var(--danger);
+        }
+
+        .notification.info::before {
+            background: var(--primary);
+        }
+
+        .notification.warning::before {
+            background: #f59e0b;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .notification-text {
+            flex: 1;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            margin-left: 0.5rem;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            animation: progress 5s linear forwards;
+        }
+
+        .notification.error .notification-progress {
+            background: var(--danger);
+        }
+
+        .notification.info .notification-progress {
+            background: var(--primary);
+        }
+
+        .notification.warning .notification-progress {
+            background: #f59e0b;
+        }
+
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        .footer {
+            margin-top: 3rem;
+            padding: 2rem 1rem 1rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            background: rgba(96, 165, 250, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .footer-text {
+            opacity: 0.8;
+        }
+    </style>
+    {% block extra_style %}{% endblock %}
+</head>
+<body class="fade-in">
+<nav class="navbar">
+    <a class="brand" href="{% url 'home' %}">PlacementAI</a>
+    <div class="nav-links">
+        <a href="{% url 'home' %}"{% if request.resolver_match.url_name == 'home' %} class="active"{% endif %}>Home</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} class="active"{% endif %}>Dashboard</a>
+            <a href="{% url 'profile' %}"{% if request.resolver_match.url_name == 'profile' %} class="active"{% endif %}>Profile</a>
+            <span class="user-info">Welcome, {{ user.username }}!</span>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}"{% if request.resolver_match.url_name == 'login' %} class="active"{% endif %}>Login</a>
+            <a href="{% url 'signup' %}"{% if request.resolver_match.url_name == 'signup' %} class="active"{% endif %}>Signup</a>
+        {% endif %}
+        <a href="{% url 'support' %}"{% if request.resolver_match.url_name == 'support' %} class="active"{% endif %}>Support</a>
+    </div>
+</nav>
+
+<div class="page-wrapper">
+    {% block content %}{% endblock %}
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="{% url 'support' %}">Support</a>
+            <a href="mailto:contact@placementai.com">Contact</a>
+        </div>
+        <div class="footer-text">© 2026 PlacementAI</div>
+    </div>
+</footer>
+
+<!-- Notification System -->
+<div class="notifications-container" id="notifications-container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="notification {{ message.tags }} show" data-id="{{ forloop.counter }}">
+                <div class="notification-progress"></div>
+                <div class="notification-content">
+                    <span class="notification-icon">
+                        {% if message.tags == 'error' %}❌
+                        {% elif message.tags == 'success' %}✅
+                        {% elif message.tags == 'warning' %}⚠️
+                        {% else %}ℹ️
+                        {% endif %}
+                    </span>
+                    <span class="notification-text">{{ message }}</span>
+                    <button class="notification-close" onclick="dismissNotification(this)">×</button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script>
+function dismissNotification(button) {
+    const notification = button.closest('.notification');
+    notification.classList.add('fade-out');
+    setTimeout(() => {
+        notification.remove();
+    }, 300);
+}
+
+function showNotification(message, type = 'info') {
+    const container = document.getElementById('notifications-container');
+    const notification = document.createElement('div');
+    const id = Date.now();
+
+    notification.className = `notification ${type} show`;
+    notification.setAttribute('data-id', id);
+    notification.innerHTML = `
+        <div class="notification-progress"></div>
+        <div class="notification-content">
+            <span class="notification-icon">
+                ${type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️'}
+            </span>
+            <span class="notification-text">${message}</span>
+            <button class="notification-close" onclick="dismissNotification(this)">×</button>
+        </div>
+    `;
+
+    container.appendChild(notification);
+
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }
+    }, 5000);
+}
+
+// Auto dismiss existing notifications
+document.addEventListener('DOMContentLoaded', function() {
+    const notifications = document.querySelectorAll('.notification');
+    notifications.forEach((notification, index) => {
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }
+        }, 5000 + (index * 500)); // Stagger dismissals
+    });
+
+    // Animate progress bars
+    animateProgressBars();
+});
+
+function animateProgressBars() {
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+        const targetWidth = bar.getAttribute('data-width') || '0';
+        setTimeout(() => {
+            bar.style.width = targetWidth + '%';
+        }, 100);
+    });
+}
+</script>
+
+{% block extra_script %}{% endblock %}
+</body>
+</html>
