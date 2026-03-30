@@ -29,6 +29,7 @@ The system evaluates:
 - Internships  
 
 Based on these, it assigns a score and suggests improvements.
+The current system uses a rule-based scoring approach to simulate AI-driven recommendations. Future improvements will integrate machine learning models for more accurate predictions.
 
 ---
 
@@ -49,6 +50,7 @@ Based on these, it assigns a score and suggests improvements.
 ### ⚙️ Admin Panel
 ![Admin](admin.png)
 
+These screenshots demonstrate the working UI and functionality of the system.
 ---
 
 ## ▶️ How to Run
