@@ -33,12 +33,22 @@ Based on these, it assigns a score and suggests improvements.
 ---
 
 ## 📸 Screenshots
+## 📸 Screenshots
+
 ### 🔐 Login Page
-![Login](Screenshot 2026-03-30 173424.png)
+![Login](login.png)
 
+### 📊 Dashboard
+![Dashboard](dashboard.png)
 
+### 🏆 Leaderboard
+![Leaderboard](leaderboard.png)
 
+### 👤 Profile Page
+![Profile](profile.png)
 
+### ⚙️ Admin Panel
+![Admin](admin.png)
 
 ---
 
