@@ -33,7 +33,6 @@ Based on these, it assigns a score and suggests improvements.
 ---
 
 ## 📸 Screenshots
-## 📸 Screenshots
 
 ### 🔐 Login Page
 ![Login](login.png)
